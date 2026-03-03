@@ -1,0 +1,51 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostLayout from "../../layouts/PostLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts", ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const allPosts = await getCollection("posts", ({ data }) => !data.draft);
+
+const sidebarCategories = Array.from(new Set(allPosts.map((p) => p.data.category))).sort();
+
+const related = allPosts
+  .filter((p) => p.slug !== post.slug && p.data.category === post.data.category)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 4);
+
+const { Content } = await post.render();
+---
+
+<BaseLayout title={post.data.title} description={post.data.description ?? ""}>
+  <PostLayout
+    title={post.data.title}
+    pubDate={post.data.pubDate}
+    category={post.data.category}
+    sidebarCategories={sidebarCategories}
+  >
+    <Content />
+
+    <Fragment slot="related">
+      {related.length > 0 && (
+        <section class="related">
+          <h2>related</h2>
+          <div class="grid">
+            {related.map((p) => <PostCard post={p} />)}
+          </div>
+        </section>
+      )}
+    </Fragment>
+  </PostLayout>
+
+  <style>
+    .related { margin-top: 28px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+    h2 { margin: 0 0 12px; }
+  </style>
+</BaseLayout>

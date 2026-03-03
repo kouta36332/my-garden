@@ -1,0 +1,71 @@
+---
+const {
+  title,
+  pubDate,
+  category,
+  sidebarCategories,
+} = Astro.props as {
+  title: string;
+  pubDate: Date;
+  category: string;
+  sidebarCategories: string[];
+};
+---
+
+<div class="wrap">
+  <article class="post">
+    <header class="head">
+      <div class="meta">
+        <span class="cat">{category}</span>
+        <time datetime={pubDate.toISOString()}>{pubDate.toISOString().slice(0, 10)}</time>
+      </div>
+      <h1>{title}</h1>
+    </header>
+
+    <div class="content">
+      <slot />
+    </div>
+
+    <slot name="related" />
+  </article>
+
+  <aside class="side">
+    <div class="box">
+      <div class="boxTitle">categories</div>
+      <ul>
+        <li><a href="/categories/">all</a></li>
+        {sidebarCategories.map((c) => (
+          <li><a href={`/categories/${c}/`}>{c}</a></li>
+        ))}
+      </ul>
+    </div>
+  </aside>
+</div>
+
+<style>
+  .wrap { display: grid; grid-template-columns: 1fr 280px; gap: 28px; align-items: start; }
+  @media (max-width: 920px) { .wrap { grid-template-columns: 1fr; } .side { order: -1; } }
+
+  .post { min-width: 0; }
+  .head { margin-bottom: 18px; }
+  .meta { display: flex; gap: 10px; justify-content: space-between; opacity: 0.8; }
+  h1 { margin: 10px 0 0; font-size: 2rem; line-height: 1.2; }
+
+  .content :global(p) { margin: 0 0 1em; }
+  .content :global(h2) { margin: 1.6em 0 0.6em; font-size: 1.5rem; }
+  .content :global(h3) { margin: 1.4em 0 0.5em; font-size: 1.2rem; }
+  .content :global(ul) { margin: 0 0 1em 1.2em; }
+  .content :global(img) { max-width: 100%; height: auto; border-radius: 12px; }
+
+  .side .box {
+    border: 1px solid rgba(127,127,127,0.25);
+    border-radius: 16px;
+    padding: 14px;
+    background: rgba(127,127,127,0.06);
+    position: sticky;
+    top: 18px;
+  }
+  .boxTitle { opacity: 0.8; margin-bottom: 10px; }
+  ul { margin: 0; padding-left: 18px; }
+  li { margin: 6px 0; }
+</style>
