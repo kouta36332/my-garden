@@ -12,60 +12,204 @@ const {
 };
 ---
 
-<div class="wrap">
-  <article class="post">
-    <header class="head">
-      <div class="meta">
-        <span class="cat">{category}</span>
-        <time datetime={pubDate.toISOString()}>{pubDate.toISOString().slice(0, 10)}</time>
+<article class="post">
+  <header class="head">
+    <div class="meta">
+      <span class="cat">{category}</span>
+      <time datetime={pubDate.toISOString()}>{pubDate.toISOString().slice(0, 10)}</time>
+    </div>
+    <h1>{title}</h1>
+  </header>
+
+  <div class="content">
+    <slot />
+  </div>
+
+  <section class="after" aria-label="After content">
+    <div class="afterInner">
+      <div class="afterGrid">
+        <div class="panel">
+          <div class="panelTitle">categories</div>
+          <ul class="list">
+            <li><a href="/categories/">all</a></li>
+            {sidebarCategories.map((c) => (
+              <li><a href={`/categories/${c}/`}>{c}</a></li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="panel">
+          <div class="panelTitle">related</div>
+          <slot name="related" />
+          <div class="hint">記事本文とは切り離された導線</div>
+        </div>
       </div>
-      <h1>{title}</h1>
-    </header>
-
-    <div class="content">
-      <slot />
     </div>
-
-    <slot name="related" />
-  </article>
-
-  <aside class="side">
-    <div class="box">
-      <div class="boxTitle">categories</div>
-      <ul>
-        <li><a href="/categories/">all</a></li>
-        {sidebarCategories.map((c) => (
-          <li><a href={`/categories/${c}/`}>{c}</a></li>
-        ))}
-      </ul>
-    </div>
-  </aside>
-</div>
+  </section>
+</article>
 
 <style>
-  .wrap { display: grid; grid-template-columns: 1fr 280px; gap: 28px; align-items: start; }
-  @media (max-width: 920px) { .wrap { grid-template-columns: 1fr; } .side { order: -1; } }
-
-  .post { min-width: 0; }
-  .head { margin-bottom: 18px; }
-  .meta { display: flex; gap: 10px; justify-content: space-between; opacity: 0.8; }
-  h1 { margin: 10px 0 0; font-size: 2rem; line-height: 1.2; }
-
-  .content :global(p) { margin: 0 0 1em; }
-  .content :global(h2) { margin: 1.6em 0 0.6em; font-size: 1.5rem; }
-  .content :global(h3) { margin: 1.4em 0 0.5em; font-size: 1.2rem; }
-  .content :global(ul) { margin: 0 0 1em 1.2em; }
-  .content :global(img) { max-width: 100%; height: auto; border-radius: 12px; }
-
-  .side .box {
-    border: 1px solid rgba(127,127,127,0.25);
-    border-radius: 16px;
-    padding: 14px;
-    background: rgba(127,127,127,0.06);
-    position: sticky;
-    top: 18px;
+  /* --- One column centered --- */
+  .post {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 0 56px;
+    min-width: 0;
   }
-  .boxTitle { opacity: 0.8; margin-bottom: 10px; }
-  ul { margin: 0; padding-left: 18px; }
-  li { margin: 6px 0; }
+
+  .head {
+    margin-bottom: 18px;
+  }
+
+  .meta {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    color: rgba(17, 17, 17, 0.65);
+    font-size: 0.95rem;
+  }
+
+  h1 {
+    margin: 10px 0 0;
+    font-size: 2.2rem;
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+  }
+
+  /* --- Typography (note-like) --- */
+  .content :global(p) {
+    margin: 0 0 1.15em;
+    font-size: 1.03rem;
+    line-height: 1.95;
+  }
+
+  .content :global(h2) {
+    margin: 1.9em 0 0.75em;
+    font-size: 1.55rem;
+    line-height: 1.35;
+  }
+
+  .content :global(h3) {
+    margin: 1.6em 0 0.6em;
+    font-size: 1.22rem;
+    line-height: 1.45;
+  }
+
+  .content :global(ul),
+  .content :global(ol) {
+    margin: 0 0 1.1em 1.35em;
+  }
+
+  .content :global(li) {
+    margin: 0.35em 0;
+  }
+
+  .content :global(blockquote) {
+    margin: 1.2em 0;
+    padding: 0.2em 0 0.2em 1em;
+    border-left: 3px solid rgba(17, 17, 17, 0.18);
+    color: rgba(17, 17, 17, 0.82);
+  }
+
+  .content :global(code) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace;
+    font-size: 0.95em;
+    background: rgba(17, 17, 17, 0.06);
+    padding: 0.15em 0.35em;
+    border-radius: 6px;
+  }
+
+  .content :global(pre) {
+    background: rgba(17, 17, 17, 0.06);
+    padding: 14px;
+    border-radius: 12px;
+    overflow: auto;
+    margin: 1.2em 0;
+  }
+
+  .content :global(pre code) {
+    background: transparent;
+    padding: 0;
+  }
+
+  .content :global(hr) {
+    border: 0;
+    border-top: 1px solid rgba(17, 17, 17, 0.12);
+    margin: 2em 0;
+  }
+
+  .content :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 14px;
+    display: block;
+    margin: 1.2em 0;
+  }
+
+  /* --- After section (comment-like separation) --- */
+  .after {
+    margin-top: 44px;
+    padding-top: 26px;
+    border-top: 1px solid rgba(17, 17, 17, 0.12);
+  }
+
+  .afterInner {
+    background: rgba(17, 17, 17, 0.03);
+    border: 1px solid rgba(17, 17, 17, 0.08);
+    border-radius: 18px;
+    padding: 18px;
+  }
+
+  .afterGrid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .panelTitle {
+    color: rgba(17, 17, 17, 0.65);
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+  }
+
+  .panel {
+    background: #fff;
+    border: 1px solid rgba(17, 17, 17, 0.08);
+    border-radius: 14px;
+    padding: 14px;
+    min-width: 0;
+  }
+
+  .list {
+    margin: 0;
+    padding-left: 18px;
+  }
+
+  .list li {
+    margin: 6px 0;
+  }
+
+  .hint {
+    margin-top: 10px;
+    color: rgba(17, 17, 17, 0.55);
+    font-size: 0.9rem;
+  }
+
+  /* --- Mobile --- */
+  @media (max-width: 780px) {
+    .post {
+      max-width: 100%;
+      padding: 0 0 44px;
+    }
+
+    h1 {
+      font-size: 1.9rem;
+    }
+
+    .afterGrid {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
